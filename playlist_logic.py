@@ -1,3 +1,4 @@
+import random
 from typing import Dict, List, Optional, Tuple
 
 Song = Dict[str, object]
@@ -10,6 +11,10 @@ DEFAULT_PROFILE = {
     "favorite_genre": "rock",
     "include_mixed": True,
 }
+
+# Genre words that make a song Hype, and title words that make it Chill.
+HYPE_KEYWORDS = ["rock", "punk", "party"]
+CHILL_KEYWORDS = ["lofi", "ambient", "sleep"]
 
 
 def normalize_title(title: str) -> str:
@@ -67,13 +72,10 @@ def classify_song(song: Song, profile: Dict[str, object]) -> str:
     chill_max_energy = profile.get("chill_max_energy", 3)
     favorite_genre = profile.get("favorite_genre", "")
 
-    hype_keywords = ["rock", "punk", "party"]
-    chill_keywords = ["lofi", "ambient", "sleep"]
-
-    is_hype_keyword = any(k in genre for k in hype_keywords)
+    is_hype_keyword = any(k in genre for k in HYPE_KEYWORDS)
     # Fix: titles keep their capitals, so lowercase before matching keywords
     # ("Ambient Dreams" should count as chill).
-    is_chill_keyword = any(k in title.lower() for k in chill_keywords)
+    is_chill_keyword = any(k in title.lower() for k in CHILL_KEYWORDS)
 
     if genre == favorite_genre or energy >= hype_min_energy or is_hype_keyword:
         return "Hype"
@@ -203,8 +205,6 @@ def lucky_pick(
 
 def random_choice_or_none(songs: List[Song]) -> Optional[Song]:
     """Return a random song or None."""
-    import random
-
     # Fix: random.choice crashes on an empty list; return None so the app
     # can show its "No songs available" message.
     if not songs:
