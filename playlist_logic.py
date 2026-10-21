@@ -77,10 +77,12 @@ def classify_song(song: Song, profile: Dict[str, object]) -> str:
     # ("Ambient Dreams" should count as chill).
     is_chill_keyword = any(k in title.lower() for k in CHILL_KEYWORDS)
 
-    if genre == favorite_genre or energy >= hype_min_energy or is_hype_keyword:
-        return "Hype"
+    # Fix: check Chill first. Before, a slow song in your favorite genre
+    # (like a rock song with energy 2) went to Hype just because of the genre.
     if energy <= chill_max_energy or is_chill_keyword:
         return "Chill"
+    if genre == favorite_genre or energy >= hype_min_energy or is_hype_keyword:
+        return "Hype"
     return "Mixed"
 
 
